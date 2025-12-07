@@ -28,7 +28,7 @@ jobs:
 
     - name: 安裝套件 (Install dependencies)
       run: |
-        pip install requests beautifulsoup4
+        pip install requests beautifulsoup4 cloudscraper
 
     - name: 執行爬蟲程式 (Run scraper)
       run: python main.py
