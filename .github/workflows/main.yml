@@ -1,0 +1,43 @@
+name: 每日抓取台股成交量
+
+on:
+  schedule:
+    # 設定排程時間 (這是 UTC 時間)
+    # 台灣下午 17:00 = UTC 09:00
+    # 語法：分 時 日 月 週
+    - cron: '0 9 * * *'
+  
+  # 讓我們也可以手動按按鈕觸發 (方便測試)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 下載程式碼 (Checkout code)
+      uses: actions/checkout@v3
+
+    - name: 設定 Python 環境
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: 安裝套件 (Install dependencies)
+      run: |
+        pip install requests beautifulsoup4
+
+    - name: 執行爬蟲程式 (Run scraper)
+      run: python main.py
+
+    - name: 存檔並推送到 GitHub (Commit and Push)
+      run: |
+        git config --global user.name "GitHub Action"
+        git config --global user.email "action@github.com"
+        git add data.csv
+        # 如果沒有資料變更就不 commit，避免錯誤
+        git commit -m "Auto update stock data" || exit 0
+        git push
